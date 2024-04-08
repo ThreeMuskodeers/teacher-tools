@@ -1,6 +1,6 @@
 use rand::Rng;
 
-use crate::{GroupId, Solution, StudentId};
+use crate::annealing::{GroupId, Solution, StudentId};
 
 pub fn make_move(solution: &Solution, num_groups: usize) -> anyhow::Result<Solution> {
     if num_groups == 1 {
