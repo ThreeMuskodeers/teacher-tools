@@ -52,8 +52,6 @@ func objective(solution Solution, numGroups int, restrictions []RelationshipPair
 	}
 	variance /= float64(numGroups)
 
-	log.Debug("Objective Result", "solution", solution, "numViolations", numViolations, "variance", variance)
-
 	return variance + numViolations // Lower variance is better, indicating more evenly sized groups.
 }
 
@@ -87,7 +85,7 @@ func SimulatedAnnealing(students []Student, numGroups int, restrictions []Relati
 	}
 
 	if bestScore > 0 {
-		log.Warn("SimulatedAnnealing failed to find a perfect solution", "bestScore", bestScore)
+		log.Warn("SimulatedAnnealing failed to find a perfect solution", "bestScore", bestScore, "bestSolution", bestSolution)
 	}
 	return bestSolution, bestScore
 }
