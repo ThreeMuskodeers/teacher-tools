@@ -9,14 +9,14 @@ import (
 )
 
 type Student struct {
-	Id        StudentId
-	FirstName string
-	LastName  string
+	Id StudentId `json:"id"`
+	// FirstName string
+	// LastName  string
 }
 
 type RelationshipPair struct {
-	FirstStudentId  StudentId
-	SecondStudentId StudentId
+	FirstStudentId  StudentId `json:"firstStudentId"`
+	SecondStudentId StudentId `json:"secondStudentId"`
 }
 type (
 	StudentId int
