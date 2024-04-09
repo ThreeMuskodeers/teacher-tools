@@ -244,12 +244,11 @@ mod tests {
                 last_name: "Chen".to_string(),
             },
         ];
-        for i in (0..1000) {
+        for _ in 0..1000 {
             let restrictions = generate_random_restriction_pairs(5, 21);
-            let num_groups = 3;
+            let num_groups = 4;
             let (solution, score) =
-                simulated_annealing(&students, num_groups, &restrictions, 100.0, 0.1, 1000)
-                    .unwrap();
+                simulated_annealing(&students, num_groups, &restrictions, 10.0, 0.1, 1000).unwrap();
             println!("Restrictions: {:?}", restrictions);
             println!("{:?}", create_group_list(&solution, num_groups));
             if score > 0.0 {

@@ -16,6 +16,8 @@ pub fn make_move(solution: &Solution, num_groups: usize) -> anyhow::Result<Solut
         group_sizes[group as usize] += 1;
     }
     // if group sizes are equal, swap students between groups
+    // FIXME: This doesn't take into account mandatory uneven group sizes
+    // Ex. 22 students 4 groups, 5, 5, 6, 6
     if group_sizes.iter().all(|&size| size == group_sizes[0]) {
         Ok(swap_students_between_groups(solution, num_groups))
     } else {
