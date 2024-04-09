@@ -108,7 +108,6 @@ func TestAnnealing(t *testing.T) {
 				t.Errorf("Negative score found")
 			}
 			if bestScore > 0 {
-				fmt.Println("TESTING")
 				fmt.Println(createGroupList(solution, tc.numGroups))
 				t.Errorf("Test should be simple enough for perfect score of 0 variance")
 			}

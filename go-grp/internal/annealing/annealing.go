@@ -67,9 +67,6 @@ func SimulatedAnnealing(students []Student, numGroups int, restrictions []Relati
 		temp := changeTemp(maxTemp, minTemp, steps, step)
 
 		newSolution, err := makeMove(maps.Clone(solution), numGroups)
-		// fmt.Println("newSolution", newSolution)
-		// fmt.Println("Old Solution", solution)
-		// fmt.Println("Best Solution", bestSolution)
 		if err != nil {
 			fmt.Println("Move failed:", err)
 			continue

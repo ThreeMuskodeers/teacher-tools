@@ -2,7 +2,6 @@ package annealing
 
 import (
 	"errors"
-	// "fmt"
 	"math/rand"
 )
 
@@ -25,7 +24,6 @@ func makeMove(solution Solution, numGroups int) (Solution, error) {
 	// if the groups sizes are all equal (or as close as possible given the number of students and groups)
 	// then we can just swap two students
 	if allEqual(numGroups, len(solution), groupSizes) {
-		// fmt.Println("All groups are equal", createGroupList(solution, numGroups))
 		return swapStudents(solution, numGroups)
 	}
 
