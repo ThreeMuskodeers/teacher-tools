@@ -102,7 +102,7 @@ fn identify_groups(group_sizes: &[i32]) -> (GroupId, GroupId) {
         if size > group_sizes[largest_group] {
             largest_group = i;
         }
-        if size < group_sizes[smallest_group] || group_sizes[smallest_group] == 0 {
+        if size < group_sizes[smallest_group] {
             smallest_group = i;
         }
     }

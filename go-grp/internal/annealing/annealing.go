@@ -51,7 +51,7 @@ func objective(solution Solution, numGroups int, restrictions []RelationshipPair
 	}
 	variance /= float64(numGroups)
 
-	return variance + (2 * numViolations) // Lower variance is better, indicating more evenly sized groups.
+	return variance + numViolations // Lower variance is better, indicating more evenly sized groups.
 }
 
 func SimulatedAnnealing(students []Student, numGroups int, restrictions []RelationshipPair, maxTemp, minTemp float64, steps int) (Solution, float64) {
@@ -66,7 +66,10 @@ func SimulatedAnnealing(students []Student, numGroups int, restrictions []Relati
 	for step := 0; step < steps; step++ {
 		temp := changeTemp(maxTemp, minTemp, steps, step)
 
-		newSolution, err := makeMove(solution, numGroups)
+		newSolution, err := makeMove(maps.Clone(solution), numGroups)
+		// fmt.Println("newSolution", newSolution)
+		// fmt.Println("Old Solution", solution)
+		// fmt.Println("Best Solution", bestSolution)
 		if err != nil {
 			fmt.Println("Move failed:", err)
 			continue
@@ -76,7 +79,7 @@ func SimulatedAnnealing(students []Student, numGroups int, restrictions []Relati
 		if newScore < bestScore || rand.Float64() < math.Exp((bestScore-newScore)/temp) {
 			solution = newSolution
 			if newScore < bestScore {
-				bestSolution = newSolution
+				bestSolution = maps.Clone(newSolution)
 				bestScore = newScore
 			}
 		}

@@ -25,7 +25,7 @@ func TestObjectiveFunction(t *testing.T) {
 			[]Student{{1, "Alice", "Last"}, {2, "Bob", "Last"}, {3, "Charlie", "Last"}, {4, "Dana", "Last"}}, // Students
 			2,                                  // Number of groups
 			[]RelationshipPair{{1, 2}, {3, 4}}, // Restrictions
-			4,                                  // Expected result: invalid solution due to restriction violation
+			2,                                  // Expected result: invalid solution due to restriction violation
 		},
 		{
 			Solution{
@@ -98,18 +98,21 @@ func TestAnnealing(t *testing.T) {
 			1000,
 		},
 	}
-
 	for _, tc := range tests {
-		solution, bestScore := SimulatedAnnealing(tc.students, tc.numGroups, tc.restrictions, tc.maxTemp, tc.minTemp, tc.steps)
-		if math.IsInf(bestScore, 1) {
-			t.Errorf("Invalid solution found")
-		}
-		if bestScore < 0 {
-			t.Errorf("Negative score found")
-		}
-		if bestScore > 0 {
-			fmt.Println(createGroupList(solution, tc.numGroups))
-			t.Errorf("Test should be simple enough for perfect score of 0 variance")
+		for range 1000 {
+			solution, bestScore := SimulatedAnnealing(tc.students, tc.numGroups, tc.restrictions, tc.maxTemp, tc.minTemp, tc.steps)
+			if math.IsInf(bestScore, 1) {
+				t.Errorf("Invalid solution found")
+			}
+			if bestScore < 0 {
+				t.Errorf("Negative score found")
+			}
+			if bestScore > 0 {
+				fmt.Println("TESTING")
+				fmt.Println(createGroupList(solution, tc.numGroups))
+				t.Errorf("Test should be simple enough for perfect score of 0 variance")
+			}
+
 		}
 	}
 }
