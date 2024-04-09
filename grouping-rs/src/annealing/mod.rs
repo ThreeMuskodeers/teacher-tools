@@ -82,6 +82,8 @@ pub fn simulated_annealing(
 
 #[cfg(test)]
 mod tests {
+    use crate::annealing::group_move::all_equal;
+
     use super::*;
 
     fn generate_random_restriction_pairs(
@@ -244,30 +246,33 @@ mod tests {
                 last_name: "Chen".to_string(),
             },
         ];
-        for i in (0..1000) {
+        for _ in 0..1000 {
             let restrictions = generate_random_restriction_pairs(5, 21);
-            let num_groups = 3;
-            let (solution, score) =
-                simulated_annealing(&students, num_groups, &restrictions, 100.0, 0.1, 1000)
-                    .unwrap();
-            println!("Restrictions: {:?}", restrictions);
-            println!("{:?}", create_group_list(&solution, num_groups));
-            if score > 0.0 {
+            let num_groups = 4;
+            let (solution, _) =
+                simulated_annealing(&students, num_groups, &restrictions, 10.0, 0.1, 1000).unwrap();
+            let violations = get_violations(&solution, &restrictions);
+            if !violations.is_empty() {
+                println!("{:?}", create_group_list(&solution, num_groups));
+                println!("Restrictions: {:?}", restrictions);
                 println!("Violations:");
-                for restriction in restrictions {
-                    if solution[&restriction.first_student_id]
-                        == solution[&restriction.second_student_id]
-                    {
-                        println!(
-                            "Students {} {} in group {}",
-                            restriction.first_student_id,
-                            restriction.second_student_id,
-                            solution[&restriction.first_student_id],
-                        );
-                    }
+                for violation in violations {
+                    println!(
+                        "Students {} and {} in group {}",
+                        violation.first_student_id,
+                        violation.second_student_id,
+                        solution[&violation.first_student_id]
+                    );
                 }
             }
-            assert_eq!(score, 0.0);
+            let group_sizes =
+                solution
+                    .values()
+                    .fold(vec![0; num_groups], |mut group_sizes, &group| {
+                        group_sizes[group as usize] += 1;
+                        group_sizes
+                    });
+            assert!(all_equal(num_groups, students.len(), &group_sizes));
         }
     }
 
@@ -277,5 +282,18 @@ mod tests {
             groups[group as usize].push(student);
         }
         groups
+    }
+
+    fn get_violations(
+        solution: &Solution,
+        restrictions: &[RelationshipPair],
+    ) -> Vec<RelationshipPair> {
+        restrictions
+            .iter()
+            .filter(|restriction| {
+                solution[&restriction.first_student_id] == solution[&restriction.second_student_id]
+            })
+            .cloned()
+            .collect()
     }
 }

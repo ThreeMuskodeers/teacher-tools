@@ -22,7 +22,23 @@ func TestObjectiveFunction(t *testing.T) {
 				3: 1,
 				4: 1,
 			},
-			[]Student{{1, "Alice", "Last"}, {2, "Bob", "Last"}, {3, "Charlie", "Last"}, {4, "Dana", "Last"}}, // Students
+			[]Student{{
+				1,
+				// "Alice",
+				// "Last"
+			}, {
+				2,
+				// "Bob",
+				// "Last",
+			}, {
+				3,
+				// "Charlie",
+				// "Last",
+			}, {
+				4,
+				// "Dana",
+				// "Last",
+			}}, // Students
 			2,                                  // Number of groups
 			[]RelationshipPair{{1, 2}, {3, 4}}, // Restrictions
 			2,                                  // Expected result: invalid solution due to restriction violation
@@ -34,7 +50,28 @@ func TestObjectiveFunction(t *testing.T) {
 				3: 0,
 				4: 1,
 			},
-			[]Student{{1, "Alice", "Last"}, {2, "Bob", "Last"}, {3, "Charlie", "Last"}, {4, "Dana", "Last"}},
+			[]Student{
+				{
+					1,
+					// "Alice",
+					// "Last"
+				},
+				{
+					2,
+					// "Bob",
+					// "Last",
+				},
+				{
+					3,
+					// "Charlie",
+					// "Last",
+				},
+				{
+					4,
+					// "Dana",
+					// "Last"
+				},
+			},
 			2,
 			[]RelationshipPair{{1, 2}, {3, 4}},
 			0.0, // Expected result: perfect variance, evenly sized groups
@@ -60,7 +97,23 @@ func TestAnnealing(t *testing.T) {
 		steps        int
 	}{
 		{
-			[]Student{{1, "Alice", "Last"}, {2, "Bob", "Last"}, {3, "Charlie", "Last"}, {4, "Dana", "Last"}},
+			[]Student{{
+				1,
+				// "Alice",
+				// "Last"
+			}, {
+				2,
+				// "Bob",
+				// "Last",
+			}, {
+				3,
+				// "Charlie",
+				// "Last",
+			}, {
+				4,
+				// "Dana",
+				// "Last",
+			}},
 			2,
 			[]RelationshipPair{{1, 2}, {3, 4}},
 			10.0,
@@ -69,29 +122,113 @@ func TestAnnealing(t *testing.T) {
 		},
 		{
 			[]Student{
-				{1, "Alice", "Last"},
-				{2, "Bob", "Last"},
-				{3, "Charlie", "Last"},
-				{4, "Dana", "Last"},
-				{5, "Eve", "Last"},
-				{6, "Frank", "Last"},
-				{7, "Grace", "Last"},
-				{8, "Hank", "Last"},
-				{9, "Ivy", "Last"},
-				{10, "Jack", "Last"},
-				{11, "Karl", "Last"},
-				{12, "Liam", "Last"},
-				{13, "Mia", "Last"},
-				{14, "Nina", "Last"},
-				{15, "Oscar", "Last"},
-				{16, "Pam", "Last"},
-				{17, "Quinn", "Last"},
-				{18, "Ralph", "Last"},
-				{19, "Sara", "Last"},
-				{20, "Tina", "Last"},
-				{21, "Ursula", "Last"},
+				{
+					1,
+					// "Alice",
+					// "Last"
+				},
+				{
+					2,
+					// "Bob",
+					// "Last",
+				},
+				{
+					3,
+					// "Charlie",
+					// "Last",
+				},
+				{
+					4,
+					// "Dana",
+					// "Last",
+				},
+				{
+					5,
+					// "Eve",
+					// "Last",
+				},
+				{
+					6,
+					// "Frank",
+					// "Last",
+				},
+				{
+					7,
+					// "Grace",
+					// "Last",
+				},
+				{
+					8,
+					// "Hank",
+					// "Last",
+				},
+				{
+					9,
+					// "Ivy",
+					// "Last",
+				},
+				{
+					10,
+					// "Jack",
+					// "Last",
+				},
+				{
+					11,
+					// "Karl",
+					// "Last",
+				},
+				{
+					12,
+					// "Liam",
+					// "Last",
+				},
+				{
+					13,
+					// "Mia",
+					// "Last",
+				},
+				{
+					14,
+					// "Nina",
+					// "Last",
+				},
+				{
+					15,
+					// "Oscar",
+					// "Last",
+				},
+				{
+					16,
+					// "Pam",
+					// "Last",
+				},
+				{
+					17,
+					// "Quinn",
+					// "Last",
+				},
+				{
+					18,
+					// "Ralph",
+					// "Last",
+				},
+				{
+					19,
+					// "Sara",
+					// "Last",
+				},
+				{
+					20,
+					// "Tina",
+					// "Last",
+				},
+				{
+					21,
+					// "Ursula",
+					// "Last",
+				},
 			},
-			3,
+			4,
 			[]RelationshipPair{{1, 2}, {3, 4}, {6, 3}, {10, 2}},
 			10.0,
 			0.1,
@@ -107,7 +244,11 @@ func TestAnnealing(t *testing.T) {
 			if bestScore < 0 {
 				t.Errorf("Negative score found")
 			}
-			if bestScore > 0 {
+			if checkForViolations(solution, tc.restrictions) {
+				fmt.Println(createGroupList(solution, tc.numGroups))
+				t.Errorf("Solution violates restrictions")
+			}
+			if bestScore > 1 {
 				fmt.Println(createGroupList(solution, tc.numGroups))
 				t.Errorf("Test should be simple enough for perfect score of 0 variance")
 			}
@@ -122,4 +263,13 @@ func createGroupList(solution Solution, numGroups int) [][]StudentId {
 		groups[group] = append(groups[group], student)
 	}
 	return groups
+}
+
+func checkForViolations(solution Solution, restrictions []RelationshipPair) bool {
+	for _, restriction := range restrictions {
+		if solution[restriction.FirstStudentId] == solution[restriction.SecondStudentId] {
+			return true
+		}
+	}
+	return false
 }

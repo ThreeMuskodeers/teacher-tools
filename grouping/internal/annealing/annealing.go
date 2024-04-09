@@ -1,21 +1,22 @@
 package annealing
 
 import (
-	"fmt"
 	"maps"
 	"math"
 	"math/rand"
+
+	"github.com/charmbracelet/log"
 )
 
 type Student struct {
-	Id        StudentId
-	FirstName string
-	LastName  string
+	Id StudentId `json:"id"`
+	// FirstName string
+	// LastName  string
 }
 
 type RelationshipPair struct {
-	FirstStudentId  StudentId
-	SecondStudentId StudentId
+	FirstStudentId  StudentId `json:"firstStudentId"`
+	SecondStudentId StudentId `json:"secondStudentId"`
 }
 type (
 	StudentId int
@@ -55,6 +56,7 @@ func objective(solution Solution, numGroups int, restrictions []RelationshipPair
 }
 
 func SimulatedAnnealing(students []Student, numGroups int, restrictions []RelationshipPair, maxTemp, minTemp float64, steps int) (Solution, float64) {
+	log.Debug("Started SimulatedAnnealing", "students", students, "numGroups", numGroups, "restrictions", restrictions, "maxTemp", maxTemp, "minTemp", minTemp, "steps", steps)
 	solution := make(Solution)
 	for _, student := range students {
 		solution[student.Id] = GroupId(rand.Intn(numGroups))
@@ -68,7 +70,7 @@ func SimulatedAnnealing(students []Student, numGroups int, restrictions []Relati
 
 		newSolution, err := makeMove(maps.Clone(solution), numGroups)
 		if err != nil {
-			fmt.Println("Move failed:", err)
+			log.Error("Move failed", "error", err)
 			continue
 		}
 		newScore := objective(newSolution, numGroups, restrictions)
@@ -82,5 +84,8 @@ func SimulatedAnnealing(students []Student, numGroups int, restrictions []Relati
 		}
 	}
 
+	if bestScore > 0 {
+		log.Warn("SimulatedAnnealing failed to find a perfect solution", "bestScore", bestScore, "bestSolution", bestSolution)
+	}
 	return bestSolution, bestScore
 }

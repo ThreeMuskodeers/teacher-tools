@@ -16,12 +16,35 @@ pub fn make_move(solution: &Solution, num_groups: usize) -> anyhow::Result<Solut
         group_sizes[group as usize] += 1;
     }
     // if group sizes are equal, swap students between groups
-    if group_sizes.iter().all(|&size| size == group_sizes[0]) {
-        Ok(swap_students_between_groups(solution, num_groups))
-    } else {
-        Ok(move_from_large_group(solution, num_groups))
+    if all_equal(num_groups, solution.len(), &group_sizes) {
+        return Ok(swap_students_between_groups(solution, num_groups));
     }
+    Ok(move_from_large_group(solution, num_groups))
 }
+pub fn all_equal(num_groups: usize, num_students: usize, group_sizes: &[usize]) -> bool {
+    // check if all elements are as close as possible due to the number of students and groups
+    let students_per_group = num_students / num_groups;
+    let remainder = num_students % num_groups;
+
+    let mut extra_allowance = remainder;
+
+    for &size in group_sizes {
+        if size > students_per_group + 1 {
+            return false;
+        }
+        if size < students_per_group {
+            return false;
+        }
+        if size == students_per_group + 1 {
+            if extra_allowance == 0 {
+                return false;
+            }
+            extra_allowance -= 1;
+        }
+    }
+    true
+}
+
 fn swap_students_between_groups(solution: &Solution, num_groups: usize) -> Solution {
     let mut new_solution = solution.clone();
     let mut rng = rand::thread_rng();
