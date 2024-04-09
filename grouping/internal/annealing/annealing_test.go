@@ -228,7 +228,7 @@ func TestAnnealing(t *testing.T) {
 					// "Last",
 				},
 			},
-			3,
+			4,
 			[]RelationshipPair{{1, 2}, {3, 4}, {6, 3}, {10, 2}},
 			10.0,
 			0.1,
@@ -244,7 +244,11 @@ func TestAnnealing(t *testing.T) {
 			if bestScore < 0 {
 				t.Errorf("Negative score found")
 			}
-			if bestScore > 0 {
+			if checkForViolations(solution, tc.restrictions) {
+				fmt.Println(createGroupList(solution, tc.numGroups))
+				t.Errorf("Solution violates restrictions")
+			}
+			if bestScore > 1 {
 				fmt.Println(createGroupList(solution, tc.numGroups))
 				t.Errorf("Test should be simple enough for perfect score of 0 variance")
 			}
@@ -259,4 +263,13 @@ func createGroupList(solution Solution, numGroups int) [][]StudentId {
 		groups[group] = append(groups[group], student)
 	}
 	return groups
+}
+
+func checkForViolations(solution Solution, restrictions []RelationshipPair) bool {
+	for _, restriction := range restrictions {
+		if solution[restriction.FirstStudentId] == solution[restriction.SecondStudentId] {
+			return true
+		}
+	}
+	return false
 }
