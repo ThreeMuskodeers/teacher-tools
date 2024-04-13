@@ -1,2 +1,2 @@
-mod annealing;
+pub mod annealing;
 pub mod backtracking;
