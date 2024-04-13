@@ -12,8 +12,8 @@ pub fn make_move(solution: &Solution, num_groups: usize) -> anyhow::Result<Solut
     }
     // calculate the group sizes
     let mut group_sizes = vec![0; num_groups];
-    for &group in solution.values() {
-        group_sizes[group as usize] += 1;
+    for group in solution.values() {
+        group_sizes[**group] += 1;
     }
     // if group sizes are equal, swap students between groups
     if all_equal(num_groups, solution.len(), &group_sizes) {
@@ -50,17 +50,17 @@ fn swap_students_between_groups(solution: &Solution, num_groups: usize) -> Solut
     let mut rng = rand::thread_rng();
 
     // Randomly select two different groups
-    let group1 = rng.gen_range(0..num_groups);
-    let mut group2 = rng.gen_range(0..num_groups);
+    let group1 = GroupId(rng.gen_range(0..num_groups));
+    let mut group2 = GroupId(rng.gen_range(0..num_groups));
     while group1 == group2 {
-        group2 = rng.gen_range(0..num_groups);
+        group2 = rng.gen_range(0..num_groups).into();
     }
 
     let students_in_group1: Vec<StudentId> = new_solution
         .iter()
-        .filter_map(|(&student, &group)| {
-            if group as usize == group1 {
-                Some(student)
+        .filter_map(|(student, group)| {
+            if *group == group1 {
+                Some(student.clone())
             } else {
                 None
             }
@@ -69,9 +69,9 @@ fn swap_students_between_groups(solution: &Solution, num_groups: usize) -> Solut
 
     let students_in_group2: Vec<StudentId> = new_solution
         .iter()
-        .filter_map(|(&student, &group)| {
-            if group as usize == group2 {
-                Some(student)
+        .filter_map(|(student, group)| {
+            if *group == group2 {
+                Some(student.clone())
             } else {
                 None
             }
@@ -80,8 +80,10 @@ fn swap_students_between_groups(solution: &Solution, num_groups: usize) -> Solut
 
     // Ensure both groups have at least one student to swap
     if !students_in_group1.is_empty() && !students_in_group2.is_empty() {
-        let student_from_group1 = students_in_group1[rng.gen_range(0..students_in_group1.len())];
-        let student_from_group2 = students_in_group2[rng.gen_range(0..students_in_group2.len())];
+        let student_from_group1 =
+            students_in_group1[rng.gen_range(0..students_in_group1.len())].clone();
+        let student_from_group2 =
+            students_in_group2[rng.gen_range(0..students_in_group2.len())].clone();
 
         // Swap the students between the two groups
         new_solution.insert(student_from_group1, group2 as GroupId);
@@ -92,17 +94,17 @@ fn swap_students_between_groups(solution: &Solution, num_groups: usize) -> Solut
 }
 fn move_from_large_group(solution: &Solution, num_groups: usize) -> Solution {
     let mut group_sizes = vec![0; num_groups];
-    for &group in solution.values() {
-        group_sizes[group as usize] += 1;
+    for group in solution.values() {
+        group_sizes[**group] += 1;
     }
 
     let (largest_group, smallest_group) = identify_groups(&group_sizes);
 
     let students_in_largest_group: Vec<StudentId> = solution
         .iter()
-        .filter_map(|(&student, &group)| {
-            if group == largest_group {
-                Some(student)
+        .filter_map(|(student, group)| {
+            if *group == largest_group {
+                Some(student.clone())
             } else {
                 None
             }
@@ -112,7 +114,7 @@ fn move_from_large_group(solution: &Solution, num_groups: usize) -> Solution {
     let mut new_solution = solution.clone();
     let mut rng = rand::thread_rng();
     let random_student =
-        students_in_largest_group[rng.gen_range(0..students_in_largest_group.len())];
+        students_in_largest_group[rng.gen_range(0..students_in_largest_group.len())].clone();
     new_solution.insert(random_student, smallest_group);
 
     new_solution
@@ -129,5 +131,5 @@ fn identify_groups(group_sizes: &[i32]) -> (GroupId, GroupId) {
             smallest_group = i;
         }
     }
-    (largest_group as GroupId, smallest_group as GroupId)
+    (largest_group.into(), smallest_group.into())
 }
