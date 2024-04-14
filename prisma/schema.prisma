@@ -13,15 +13,6 @@ model Class {
   name      String?   @unique()
   creatorId String
   students  Student[]
-  teacher   Teacher   @relation("teacher", fields: [teacherId], references: [userId])
-  creator   Teacher   @relation("creator", fields: [creatorId], references: [userId])
-}
-
-model Teacher {
-  userId         String  @id @unique()
-  school         String?
-  classes        Class[] @relation("teacher")
-  createdClasses Class[] @relation("creator")
 }
 
 model Student {
