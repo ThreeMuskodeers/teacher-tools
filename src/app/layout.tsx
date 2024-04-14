@@ -22,11 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <TRPCReactProvider>
         <ClerkProvider>
           <body
-            suppressHydrationWarning
             className={cn(
               "min-h-screen bg-background font-sans antialiased flex flex-col",
               fontSans.variable
