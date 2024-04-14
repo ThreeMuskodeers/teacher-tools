@@ -1,8 +1,9 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { UserButton } from "@clerk/nextjs";
+import { ClerkLoading, SignedIn, UserButton } from "@clerk/nextjs";
 import { Breadcrumbs } from "./breadcrumbs";
 import { ThemeToggle } from "./theme-toggle";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Navbar = () => {
   return (
@@ -17,7 +18,12 @@ export const Navbar = () => {
         />
       </div>
       <ThemeToggle />
-      <UserButton afterSignOutUrl="/" />
+      <ClerkLoading>
+        <Skeleton className="h-9 w-9 rounded-full" />
+      </ClerkLoading>
+      <SignedIn>
+        <UserButton afterSignOutUrl="/" />
+      </SignedIn>
     </header>
   );
 };
