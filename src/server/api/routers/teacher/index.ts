@@ -1,53 +1,52 @@
 import { z } from "zod";
-
+import { clerkClient } from "@clerk/nextjs";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { stripPrivateUserData } from "./service";
 
 export const teacherRouter = createTRPCRouter({
   get: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(({ ctx, input }) => {
-      return ctx.db.teacher.findFirst({
-        where: {
-          userId: input.userId,
-        },
-      });
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx }) => {
+      return stripPrivateUserData(
+        await clerkClient.users.getUser(ctx.auth.userId)
+      );
     }),
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.teacher.findMany();
+  getAll: protectedProcedure.query(async () => {
+    return (await clerkClient.users.getUserList()).map((user) =>
+      stripPrivateUserData(user)
+    );
   }),
   create: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string(),
         school: z.string().optional(),
       })
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.teacher.create({
-        data: input,
+    .mutation(async ({ ctx, input }) => {
+      return await clerkClient.users.createUser({
+        emailAddress: [input.email],
+        firstName: input.firstName,
+        lastName: input.lastName,
+        publicMetadata: {
+          school: input.school,
+        },
       });
     }),
   update: protectedProcedure
     .input(
-      z.object({
-        userId: z.string(),
-        school: z.string().optional(),
-      })
+      z
+        .object({
+          school: z.string(),
+        })
+        .partial()
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.teacher.update({
-        where: {
-          userId: input.userId,
-        },
-        data: input,
-      });
-    }),
-  delete: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .mutation(({ ctx, input }) => {
-      return ctx.db.teacher.delete({
-        where: {
-          userId: input.userId,
+    .mutation(async ({ ctx, input }) => {
+      return await clerkClient.users.updateUser(ctx.auth.userId, {
+        publicMetadata: {
+          school: input.school,
         },
       });
     }),

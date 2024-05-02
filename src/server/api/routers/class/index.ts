@@ -26,6 +26,7 @@ export const classRouter = createTRPCRouter({
       return ctx.db.class.create({
         data: {
           ...input,
+          teacherId: ctx.auth.userId,
           creatorId: ctx.auth.userId,
         },
       });
@@ -35,7 +36,6 @@ export const classRouter = createTRPCRouter({
       z.object({
         id: z.number().int(),
         name: z.string(),
-        teacherId: z.string(),
       })
     )
     .mutation(({ ctx, input }) => {
